@@ -55,64 +55,64 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        initView();
         list=new ArrayList();
+        list1=new ArrayList<>();
+
         list.add("北京");
         list.add("长沙");
+        initView();
+    }
+
+    class MyPagerAdapter extends PagerAdapter{
+
+        @Override
+        public int getCount() {
+            return views.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view==object;
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Log.d("xxxx", "instantiateItem: position = "+position);
+            container.addView((View) views.get(position));
+            initviews((View) views.get(position));
+            ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
+            ed_note = ((View) views.get(position)).findViewById(R.id.ed_note);
+            listView = ((View) views.get(position)).findViewById(R.id.list_weather);
+
+            button=((View) views.get(position)).findViewById(R.id.button);
+            button.setText((CharSequence) list.get(position));
+            updateUI(list1.get(position));
+//                if (list1!=null){
+//                    updateUI((TodayWeather)list1.get(position));
+//                }
 
 
+            return views.get(position);
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            //super.destroyItem(container, position, object);
+            container.removeView((View) views.get(position));
+        }
     }
 
     private void initView() {
         mviewPager =findViewById(R.id.viewPager);
+
         views=new ArrayList();
 
         //循环加载viewpager
         for (int i=0;i<2;i++ ){
+            getWeather((String) list.get(i));
             views.add(getLayoutInflater().inflate(R.layout.mian,null));
-
         }
-
-        mviewPager.setOffscreenPageLimit(3);
-        mviewPager.setAdapter(new PagerAdapter() {
-            @Override
-            public int getCount() {
-                return views.size();
-            }
-
-            @Override
-            public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-                return view==object;
-            }
-
-            @NonNull
-            @Override
-            public Object instantiateItem(@NonNull ViewGroup container, int position) {
-                container.addView((View) views.get(position));
-                initviews((View) views.get(position));
-                ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
-                ed_note = ((View) views.get(position)).findViewById(R.id.ed_note);
-                listView = ((View) views.get(position)).findViewById(R.id.list_weather);
-
-                button=((View) views.get(position)).findViewById(R.id.button);
-                button.setText((CharSequence) list.get(position));
-                getWeather((String) list.get(position));
-                if (list1!=null){
-                    updateUI((TodayWeather)list1.get(position));
-                }
-
-
-                return views.get(position);
-            }
-
-            @Override
-            public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                //super.destroyItem(container, position, object);
-                container.removeView((View) views.get(position));
-            }
-        });
     }
 
     private void initviews(View view) {
@@ -145,19 +145,17 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println(todayWeather);
                         Log.d("tag", String.valueOf(todayWeather));
                         if(todayWeather != null){
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    updateUI(todayWeather);
-//                                    useSp(todayWeather.getCity());
-//                                }
-//                            });
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mviewPager.setOffscreenPageLimit(3);
+                                    mviewPager.setAdapter(new MyPagerAdapter());
+                                    //updateUI(todayWeather);
+                                    //useSp(todayWeather.getCity());
+                                }
+                            });
                             info=todayWeather;
-                            Message msg = Message.obtain();
-                            msg.what=1;
-                            msg.obj=todayWeather;
-                            System.out.println(todayWeather);
-                            handler.sendMessage(msg);
+                            list1.add(info);
                         }
                     }
 
