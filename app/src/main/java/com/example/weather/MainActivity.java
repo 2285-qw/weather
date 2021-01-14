@@ -1,6 +1,7 @@
 package com.example.weather;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.example.weather.adapter.WeatherAdapter;
 import com.example.weather.cb.impl.WeatherCallback;
 import com.example.weather.entity.TodayWeather;
+import com.example.weather.ui.BaseActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -36,17 +39,17 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     ViewPager mviewPager;
     List views;
     TextView ed_wendu;
-    TextView ed_note;
     ListView listView;
+    TextView city;
     List list;
     List<TodayWeather> list1;
-
-    Button button;
+    //什么天气——————阴天  晴天
+    TextView type;
 
     TodayWeather info;
 
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         list=new ArrayList();
         list1=new ArrayList<>();
 
@@ -80,18 +84,11 @@ public class MainActivity extends AppCompatActivity {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             Log.d("xxxx", "instantiateItem: position = "+position);
             container.addView((View) views.get(position));
-            initviews((View) views.get(position));
             ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
-            ed_note = ((View) views.get(position)).findViewById(R.id.ed_note);
             listView = ((View) views.get(position)).findViewById(R.id.list_weather);
-
-            button=((View) views.get(position)).findViewById(R.id.button);
-            button.setText((CharSequence) list.get(position));
+            city =((View) views.get(position)).findViewById(R.id.city);
+            type =((View) views.get(position)).findViewById(R.id.weather);
             updateUI(list1.get(position));
-//                if (list1!=null){
-//                    updateUI((TodayWeather)list1.get(position));
-//                }
-
 
             return views.get(position);
         }
@@ -115,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initviews(View view) {
-
-    }
 
     //加载天气
     public void getWeather(String city){
@@ -141,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
                 call.enqueue(new WeatherCallback(){
                     @Override
                     public void onComplete(TodayWeather todayWeather) {
+                        //Log.d("tag", String.valueOf(todayWeather));
 
-                        System.out.println(todayWeather);
-                        Log.d("tag", String.valueOf(todayWeather));
+                            info=todayWeather;
+                            list1.add(info);
                         if(todayWeather != null){
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -154,8 +149,6 @@ public class MainActivity extends AppCompatActivity {
                                     //useSp(todayWeather.getCity());
                                 }
                             });
-                            info=todayWeather;
-                            list1.add(info);
                         }
                     }
 
@@ -178,12 +171,14 @@ public class MainActivity extends AppCompatActivity {
 //            Toast.makeText(MainActivity.this,"请输入正确的城市名称！", Toast.LENGTH_SHORT).show();
 //            return;
 //        }
-        //info.getCity();
+
+        type.setText(info.getList().get(1).getType());
+        city.setText(info.getCity());
         ed_wendu.setText(info.getWendu()+"℃");
-        ed_note.setText(info.getNote());
         WeatherAdapter weatherAdapter = new WeatherAdapter(this,R.layout.weather_item,info.getList());
         listView.setAdapter(weatherAdapter);
     }
+
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -191,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     TodayWeather info = (TodayWeather) msg.obj;
                     if(info == null){
-
                         info.getCity();
                         Toast.makeText(MainActivity.this,"请输入正确的城市名称" , Toast.LENGTH_SHORT).show();
                         return;
@@ -203,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     String str = (String) msg.obj;
                     Toast.makeText(MainActivity.this,str , Toast.LENGTH_SHORT).show();
+                    finish();
                     break;
 
             }

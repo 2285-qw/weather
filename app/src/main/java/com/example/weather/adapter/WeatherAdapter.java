@@ -24,17 +24,17 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
         Weather weather = getItem(position);
         View view = View.inflate(getContext(),resource,null);
         TextView date = view.findViewById(R.id.tv_date);
-        TextView type = view.findViewById(R.id.tv_type);
+        //TextView type = view.findViewById(R.id.tv_type);
         TextView low = view.findViewById(R.id.tv_low);
         TextView high = view.findViewById(R.id.tv_high);
         if(position == 0){
             date.setText("今天");
         }else{
-            date.setText(weather.getDate().substring(0,5));
+            date.setText(weather.getDate().substring(3,6));
         }
-        type.setText(weather.getType());
-        low.setText(weather.getLow());
-        high.setText(weather.getHigh());
+        //type.setText(weather.getType());
+        low.setText(weather.getLow().substring(3,weather.getLow().length()));
+        high.setText(weather.getHigh().substring(3,weather.getHigh().length()));
         return view;
     }
 }
