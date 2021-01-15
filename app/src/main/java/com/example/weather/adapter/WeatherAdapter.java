@@ -1,9 +1,11 @@
 package com.example.weather.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -27,6 +29,23 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
         //TextView type = view.findViewById(R.id.tv_type);
         TextView low = view.findViewById(R.id.tv_low);
         TextView high = view.findViewById(R.id.tv_high);
+        ImageView weather_icon=view.findViewById(R.id.weather_icon);
+        Log.d("eee",weather.getType());
+        switch (weather.getType()){
+            case "多云":
+                weather_icon.setImageResource(R.mipmap.duoyun);
+                break;
+            case "小雨":
+            case "雨":
+            case "大雨":
+            case "暴雨":
+                weather_icon.setImageResource(R.mipmap.xiayu);
+                break;
+            case "阴":
+                weather_icon.setImageResource(R.mipmap.yingtian);
+                break;
+
+        }
         if(position == 0){
             date.setText("今天");
         }else{

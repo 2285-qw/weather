@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <ImageView
+        android:id="@+id/main_beijin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
@@ -62,6 +63,7 @@
 
         <TextView
             android:id="@+id/time"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -78,7 +80,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="fitXY"
-                android:src="@mipmap/mian_back" />
+                android:src="@mipmap/mian_back"
+                android:layout_marginTop="50dp"/>
 
             <ListView
                 android:id="@+id/list_weather"

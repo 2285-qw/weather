@@ -50,6 +50,8 @@ public class MainActivity extends BaseActivity {
     List<TodayWeather> list1;
     //什么天气——————阴天  晴天
     TextView type;
+    //主页背景图片
+    ImageView main_beijin;
 
     TodayWeather info;
 
@@ -62,7 +64,7 @@ public class MainActivity extends BaseActivity {
         list=new ArrayList();
         list1=new ArrayList<>();
 
-        list.add("北京");
+        list.add("天津");
         list.add("长沙");
         initView();
     }
@@ -84,10 +86,12 @@ public class MainActivity extends BaseActivity {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             Log.d("xxxx", "instantiateItem: position = "+position);
             container.addView((View) views.get(position));
+
             ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
             listView = ((View) views.get(position)).findViewById(R.id.list_weather);
             city =((View) views.get(position)).findViewById(R.id.city);
             type =((View) views.get(position)).findViewById(R.id.weather);
+            main_beijin=((View) views.get(position)).findViewById(R.id.main_beijin);
             updateUI(list1.get(position));
 
             return views.get(position);
@@ -173,10 +177,18 @@ public class MainActivity extends BaseActivity {
 //        }
 
         type.setText(info.getList().get(1).getType());
+        switch (info.getList().get(1).getType()){
+            case "小雨":
+            case "雨":
+            case "大雨":
+                main_beijin.setImageResource(R.mipmap.beijin_xiayu);
+        }
         city.setText(info.getCity());
         ed_wendu.setText(info.getWendu()+"℃");
         WeatherAdapter weatherAdapter = new WeatherAdapter(this,R.layout.weather_item,info.getList());
         listView.setAdapter(weatherAdapter);
+
+
     }
 
     private Handler handler = new Handler(){
