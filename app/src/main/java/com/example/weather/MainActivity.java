@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -70,7 +71,11 @@ public class MainActivity extends BaseActivity {
 
         list.add("天津");
         list.add("长沙");
+
         initView();
+        mviewPager.setOffscreenPageLimit(3);
+        mviewPager.setAdapter(new MyPagerAdapter());
+
     }
 
     class MyPagerAdapter extends PagerAdapter{
@@ -88,14 +93,12 @@ public class MainActivity extends BaseActivity {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            Log.d("xxxx", "instantiateItem: position = "+position);
-            container.addView((View) views.get(position));
-
             ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
             listView = ((View) views.get(position)).findViewById(R.id.list_weather);
             city =((View) views.get(position)).findViewById(R.id.city);
             type =((View) views.get(position)).findViewById(R.id.weather);
             main_beijin=((View) views.get(position)).findViewById(R.id.main_beijin);
+<<<<<<< HEAD
             Log.d("eee",position+"----"+list1.size());
 
             if (weather_date.get(list.get(position))!=null){
@@ -104,12 +107,42 @@ public class MainActivity extends BaseActivity {
             }
 
             return views.get(position);
+=======
+            //updateUI(list1.get(position));
+            getWeather((String) list.get(position));
+            container.addView((View) views.get(position));
+            return (View) views.get(position);
+
+            /*View view= (View) views.get(position);
+            if (view==null){
+                View newview=LayoutInflater.from(getApplicationContext()).inflate(R.layout.mian,container,false);
+                ed_wendu = newview.findViewById(R.id.ed_wendu);
+                listView = newview.findViewById(R.id.list_weather);
+                city =newview.findViewById(R.id.city);
+                type =newview.findViewById(R.id.weather);
+                main_beijin=newview.findViewById(R.id.main_beijin);
+                view=newview;
+            }
+            getWeather((String) list.get(position));
+            container.addView(view);
+            return view;*/
+
+            /*View VIEW= LayoutInflater.from(getApplicationContext()).inflate(R.layout.mian,container,false);
+            listView = VIEW.findViewById(R.id.list_weather);
+            city =VIEW.findViewById(R.id.city);
+            type =VIEW.findViewById(R.id.weather);
+            main_beijin=VIEW.findViewById(R.id.main_beijin);
+            View yy=VIEW;
+            updateUI(list1.get(position));
+            container.addView(yy);
+            return yy;*/
+>>>>>>> 2a58dd0ca103ad6e4b20e97c94cc00a8a53fdba8
         }
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             //super.destroyItem(container, position, object);
-            container.removeView((View) views.get(position));
+            container.removeView((View) object);
         }
     }
 
@@ -152,6 +185,7 @@ public class MainActivity extends BaseActivity {
 
                             info=todayWeather;
                             list1.add(info);
+<<<<<<< HEAD
                             weather_date.put(city,todayWeather);
                             Log.d("EEE",list1.size()+"");
                             if (list1.size()==2){
@@ -164,6 +198,16 @@ public class MainActivity extends BaseActivity {
 
                                         }
                                     });
+=======
+                        if(todayWeather != null){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+//                                    mviewPager.setOffscreenPageLimit(3);
+//                                    mviewPager.setAdapter(new MyPagerAdapter());
+//                                    updateUI(list1.get(list1.size()-1));
+//                                    useSp(todayWeather.getCity());
+>>>>>>> 2a58dd0ca103ad6e4b20e97c94cc00a8a53fdba8
                                 }
                             }
 
@@ -189,13 +233,13 @@ public class MainActivity extends BaseActivity {
             return;
         }
 
-        type.setText(info.getList().get(1).getType());
+        /*type.setText(info.getList().get(1).getType());
         switch (info.getList().get(1).getType()){
             case "小雨":
             case "雨":
             case "大雨":
                 main_beijin.setImageResource(R.mipmap.beijin_xiayu);
-        }
+        }*/
         city.setText(info.getCity());
         ed_wendu.setText(info.getWendu()+"℃");
         WeatherAdapter weatherAdapter = new WeatherAdapter(this,R.layout.weather_item,info.getList());
