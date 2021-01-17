@@ -1,8 +1,6 @@
 package com.example.weather;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -15,8 +13,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,7 +29,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -52,6 +50,8 @@ public class MainActivity extends BaseActivity {
     TextView type;
     //主页背景图片
     ImageView main_beijin;
+    //数据集合
+    Map<String, TodayWeather> weather_date;
 
     TodayWeather info;
 
@@ -63,6 +63,10 @@ public class MainActivity extends BaseActivity {
 
         list=new ArrayList();
         list1=new ArrayList<>();
+        weather_date=new HashMap<String, TodayWeather>();
+        weather_date.put("天津",null);
+        weather_date.put("长沙",null);
+
 
         list.add("天津");
         list.add("长沙");
@@ -92,7 +96,12 @@ public class MainActivity extends BaseActivity {
             city =((View) views.get(position)).findViewById(R.id.city);
             type =((View) views.get(position)).findViewById(R.id.weather);
             main_beijin=((View) views.get(position)).findViewById(R.id.main_beijin);
-            updateUI(list1.get(position));
+            Log.d("eee",position+"----"+list1.size());
+
+            if (weather_date.get(list.get(position))!=null){
+                updateUI( weather_date.get(list.get(position)));
+                //updateUI(list1.get(position));
+            }
 
             return views.get(position);
         }
@@ -106,7 +115,7 @@ public class MainActivity extends BaseActivity {
 
     private void initView() {
         mviewPager =findViewById(R.id.viewPager);
-
+        mviewPager.setOffscreenPageLimit(3);
         views=new ArrayList();
 
         //循环加载viewpager
@@ -143,17 +152,21 @@ public class MainActivity extends BaseActivity {
 
                             info=todayWeather;
                             list1.add(info);
-                        if(todayWeather != null){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mviewPager.setOffscreenPageLimit(3);
-                                    mviewPager.setAdapter(new MyPagerAdapter());
-                                    //updateUI(todayWeather);
-                                    //useSp(todayWeather.getCity());
+                            weather_date.put(city,todayWeather);
+                            Log.d("EEE",list1.size()+"");
+                            if (list1.size()==2){
+                                if(todayWeather != null){
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //网络加载数据完成设置viewpager的Adapter
+                                            mviewPager.setAdapter(new MyPagerAdapter());
+
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                            }
+
                     }
 
                     @Override
@@ -171,10 +184,10 @@ public class MainActivity extends BaseActivity {
 
 
     private void updateUI(TodayWeather info) {
-//        if(info.getWendu() == null){
-//            Toast.makeText(MainActivity.this,"请输入正确的城市名称！", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
+        if(info.getWendu() == null){
+            Toast.makeText(MainActivity.this,"请输入正确的城市名称！", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         type.setText(info.getList().get(1).getType());
         switch (info.getList().get(1).getType()){
