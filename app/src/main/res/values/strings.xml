@@ -3,4 +3,6 @@
     <string name="weatherurl">http://wthrcdn.etouch.cn/weather_mini?city=</string>
     <string name="startlocation">开始定位</string>
     <string name="stoplocation">停止定位</string>
+    <string name="city_chooice">城市管理</string>
+    <string name="add_city">添加城市</string>
 </resources>
