@@ -5,7 +5,6 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,9 +21,7 @@ import android.widget.Toast;
 import com.example.weather.adapter.WeatherAdapter;
 import com.example.weather.cb.impl.WeatherCallback;
 import com.example.weather.entity.TodayWeather;
-import com.example.weather.ui.AddcityActivity;
 import com.example.weather.ui.BaseActivity;
-import com.example.weather.ui.City_choiceActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,7 +44,6 @@ public class MainActivity extends BaseActivity {
     TextView ed_wendu;
     ListView listView;
     TextView city;
-    //城市集合
     public static List list;
     List<TodayWeather> list1;
     //什么天气——————阴天  晴天
@@ -55,11 +51,9 @@ public class MainActivity extends BaseActivity {
     //主页背景图片
     ImageView main_beijin;
     //数据集合
-    public static Map<String, TodayWeather> weather_date;
-    //天气数据对象
+   public static Map<String, TodayWeather> weather_date;
+
     TodayWeather info;
-    //添加城市按钮
-    ImageView add_city;
 
 
     @Override
@@ -79,7 +73,7 @@ public class MainActivity extends BaseActivity {
         initView();
     }
 
-    class MyPagerAdapter extends PagerAdapter implements View.OnClickListener {
+    class MyPagerAdapter extends PagerAdapter{
 
         @Override
         public int getCount() {
@@ -102,9 +96,8 @@ public class MainActivity extends BaseActivity {
             city =((View) views.get(position)).findViewById(R.id.city);
             type =((View) views.get(position)).findViewById(R.id.weather);
             main_beijin=((View) views.get(position)).findViewById(R.id.main_beijin);
-            add_city=((View) views.get(position)).findViewById(R.id.add_city);
-            add_city.setOnClickListener(this);
-            city.setOnClickListener(this);
+            Log.d("eee",position+"----"+list1.size());
+
             if (weather_date.get(list.get(position))!=null){
                 updateUI( weather_date.get(list.get(position)));
                 //updateUI(list1.get(position));
@@ -117,19 +110,6 @@ public class MainActivity extends BaseActivity {
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             //super.destroyItem(container, position, object);
             container.removeView((View) views.get(position));
-        }
-
-        //viewpager的点击事件
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.city:
-                    startActivity(new Intent(MainActivity.this, City_choiceActivity.class));
-                    break;
-                case R.id.add_city:
-                    startActivity(new Intent(MainActivity.this, AddcityActivity.class));
-                    break;
-            }
         }
     }
 
@@ -170,22 +150,22 @@ public class MainActivity extends BaseActivity {
                     public void onComplete(TodayWeather todayWeather) {
                         //Log.d("tag", String.valueOf(todayWeather));
 
-                            info=todayWeather;
-                            list1.add(info);
-                            weather_date.put(city,todayWeather);
-                            Log.d("EEE",list1.size()+"");
-                            if (list1.size()==2){
-                                if(todayWeather != null){
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //网络加载数据完成设置viewpager的Adapter
-                                            mviewPager.setAdapter(new MyPagerAdapter());
+                        info=todayWeather;
+                        list1.add(info);
+                        weather_date.put(city,todayWeather);
+                        Log.d("EEE",list1.size()+"");
+                        if (list1.size()==2){
+                            if(todayWeather != null){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //网络加载数据完成设置viewpager的Adapter
+                                        mviewPager.setAdapter(new MyPagerAdapter());
 
-                                        }
-                                    });
-                                }
+                                    }
+                                });
                             }
+                        }
 
                     }
 
@@ -215,13 +195,9 @@ public class MainActivity extends BaseActivity {
             case "雨":
             case "大雨":
                 main_beijin.setImageResource(R.mipmap.beijin_xiayu);
-                break;
-            case"阴":
-                main_beijin.setImageResource(R.mipmap.yin);
-                break;
         }
         city.setText(info.getCity());
-        ed_wendu.setText(info.getWendu()+"°");
+        ed_wendu.setText(info.getWendu()+"℃");
         WeatherAdapter weatherAdapter = new WeatherAdapter(this,R.layout.weather_item,info.getList());
         listView.setAdapter(weatherAdapter);
 
