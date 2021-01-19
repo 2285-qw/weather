@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.weather.MainActivity;
 import com.example.weather.R;
 
 import static com.example.weather.MainActivity.list;
@@ -24,13 +25,25 @@ import static com.example.weather.MainActivity.weather_date;
 public class City_choiceActivity extends AppCompatActivity implements View.OnClickListener {
     ImageView return_button;
     ListView lv_city;
+    //底部添加城市布局
     LinearLayout lin_add;
+    //删除城市按钮
     ImageView city_delete;
+    //记录删除键的显示隐藏
+    boolean istrue = false;
+    //修改城市设置取消按钮
+    ImageView cancel_button;
+    //修改城市设置确认按钮
+    ImageView confirm_button;
+    //定位图标
+    ImageView location;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_choice);
+        //初始化
         initDate();
         initview();
     }
@@ -40,20 +53,26 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
         lv_city.setAdapter(new Myadapter());
         lv_city.setDivider(null);
         lin_add.setOnClickListener(this);
+        confirm_button.setOnClickListener(this);
+        cancel_button.setOnClickListener(this);
+
+        //对listview进行长按监听
         lv_city.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(City_choiceActivity.this, "长按", Toast.LENGTH_SHORT).show();
-
-                ImageView city_delete = view.findViewById(R.id.city_delete);
-                city_delete.setVisibility(View.VISIBLE);
-
+                istrue = true;
+                lv_city.setAdapter(new Myadapter());
+                confirm_button.setVisibility(View.VISIBLE);
+                lin_add.setVisibility(View.GONE);
                 return true;
             }
         });
     }
 
     private void initDate() {
+
+        confirm_button = findViewById(R.id.confirm_button);
+        cancel_button = findViewById(R.id.cancel_button);
         lin_add = findViewById(R.id.lin_add);
         return_button = findViewById(R.id.return_button);
         lv_city = findViewById(R.id.lv_city);
@@ -69,6 +88,7 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    //点击事件处理
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -77,9 +97,22 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.lin_add:
                 startActivity(new Intent(City_choiceActivity.this, AddcityActivity.class));
+                //修改城市确认按钮
+            case R.id.confirm_button:
+                Toast.makeText(City_choiceActivity.this, "修改数据成功", Toast.LENGTH_SHORT).show();
+                istrue = false;
+                lv_city.setAdapter(new Myadapter());
+                confirm_button.setVisibility(View.GONE);
+                lin_add.setVisibility(View.VISIBLE);
+                break;
+            //修改城市取消按钮
+            case R.id.cancel_button:
+
+                break;
         }
     }
 
+    //自己的Adapter
     private class Myadapter extends BaseAdapter {
 
         @Override
@@ -107,11 +140,37 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
             }
             TextView city = view.findViewById(R.id.city);
             TextView temperature = view.findViewById(R.id.temperature);
-            city_delete=view.findViewById(R.id.city_delete);
+            city_delete = view.findViewById(R.id.city_delete);
+            location = view.findViewById(R.id.location);
+            if (position == 0) {
+                location.setImageResource(R.mipmap.location);
+            }
+
+            city_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //finalView.setVisibility(View.GONE);
+                    if (position == 0) {
+                        Toast.makeText(City_choiceActivity.this, "如法删除此做城市", Toast.LENGTH_SHORT).show();
+                    } else {
+                        weather_date.remove(list.get(position));
+                        list.remove(position);
+                        notifyDataSetChanged();
+                    }
+
+                }
+            });
+            if (istrue) {
+                city_delete.setVisibility(View.VISIBLE);
+            } else {
+                city_delete.setVisibility(View.GONE);
+            }
 
             city.setText((CharSequence) list.get(position));
             temperature.setText((CharSequence) weather_date.get(list.get(position)).getWendu() + "°");
             return view;
         }
+
+
     }
 }

@@ -26,6 +26,25 @@
                 android:paddingLeft="10dp"
                 android:paddingEnd="10dp"
                 android:src="@mipmap/return_buttom" />
+            <ImageView
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginLeft="20dp"
+                android:paddingLeft="10dp"
+                android:paddingEnd="10dp"
+                android:visibility="gone"
+                android:src="@mipmap/city_cancel" />
+            <ImageView
+                android:id="@+id/confirm_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:paddingLeft="10dp"
+                android:paddingEnd="10dp"
+                android:visibility="gone"
+                android:src="@mipmap/confirm" />
 
             <TextView
                 android:layout_width="wrap_content"

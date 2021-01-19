@@ -22,15 +22,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_gravity="center"
             android:paddingTop="60dp">
-
+            <ImageView
+                android:id="@+id/location"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+               />
             <TextView
                 android:id="@+id/city"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -68,7 +77,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="9"
             android:textColor="@color/white"
             android:textSize="24sp" />
 

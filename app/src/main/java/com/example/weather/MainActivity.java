@@ -5,11 +5,13 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +23,9 @@ import android.widget.Toast;
 import com.example.weather.adapter.WeatherAdapter;
 import com.example.weather.cb.impl.WeatherCallback;
 import com.example.weather.entity.TodayWeather;
+import com.example.weather.ui.AddcityActivity;
 import com.example.weather.ui.BaseActivity;
+import com.example.weather.ui.City_choiceActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -51,9 +55,14 @@ public class MainActivity extends BaseActivity {
     //主页背景图片
     ImageView main_beijin;
     //数据集合
-   public static Map<String, TodayWeather> weather_date;
-
+    public static Map<String, TodayWeather> weather_date;
+    //添加城市按钮
+    ImageView add_city;
+    //定位图标
+    ImageView location;
     TodayWeather info;
+    //月日
+    String Time;
 
 
     @Override
@@ -61,19 +70,22 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        list=new ArrayList();
-        list1=new ArrayList<>();
-        weather_date=new HashMap<String, TodayWeather>();
-        weather_date.put("天津",null);
-        weather_date.put("长沙",null);
+        list = new ArrayList();
+        list1 = new ArrayList<>();
+        weather_date = new HashMap<String, TodayWeather>();
+        weather_date.put("天津", null);
+        weather_date.put("长沙", null);
+        weather_date.put("北京", null);
 
 
         list.add("天津");
         list.add("长沙");
+        list.add("北京");
         initView();
+
     }
 
-    class MyPagerAdapter extends PagerAdapter{
+    class MyPagerAdapter extends PagerAdapter implements View.OnClickListener {
 
         @Override
         public int getCount() {
@@ -82,27 +94,37 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return view==object;
+            return view == object;
         }
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            Log.d("xxxx", "instantiateItem: position = "+position);
+            Log.d("xxxx", "instantiateItem: position = " + position);
             container.addView((View) views.get(position));
 
+            TextView time = ((View) views.get(position)).findViewById(R.id.time);
+            location = ((View) views.get(position)).findViewById(R.id.location);
             ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
             listView = ((View) views.get(position)).findViewById(R.id.list_weather);
-            city =((View) views.get(position)).findViewById(R.id.city);
-            type =((View) views.get(position)).findViewById(R.id.weather);
-            main_beijin=((View) views.get(position)).findViewById(R.id.main_beijin);
-            Log.d("eee",position+"----"+list1.size());
+            city = ((View) views.get(position)).findViewById(R.id.city);
+            type = ((View) views.get(position)).findViewById(R.id.weather);
+            main_beijin = ((View) views.get(position)).findViewById(R.id.main_beijin);
+            add_city = ((View) views.get(position)).findViewById(R.id.add_city);
 
-            if (weather_date.get(list.get(position))!=null){
-                updateUI( weather_date.get(list.get(position)));
-                //updateUI(list1.get(position));
+            time.setText(Time + "");
+
+            city.setOnClickListener(this);
+            add_city.setOnClickListener(this);
+
+            if (position == 0) {
+                location.setImageResource(R.mipmap.location);
             }
 
+            if (weather_date.get(list.get(position)) != null) {
+                updateUI(weather_date.get(list.get(position)));
+                //updateUI(list1.get(position));
+            }
             return views.get(position);
         }
 
@@ -111,26 +133,39 @@ public class MainActivity extends BaseActivity {
             //super.destroyItem(container, position, object);
             container.removeView((View) views.get(position));
         }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.city:
+                    startActivity(new Intent(MainActivity.this, City_choiceActivity.class));
+                    break;
+                case R.id.add_city:
+                    startActivity(new Intent(MainActivity.this, AddcityActivity.class));
+                    break;
+            }
+        }
     }
 
     private void initView() {
-        mviewPager =findViewById(R.id.viewPager);
+        mviewPager = findViewById(R.id.viewPager);
         mviewPager.setOffscreenPageLimit(3);
-        views=new ArrayList();
-
+        views = new ArrayList();
+        //获取当前时间
+        gettime();
         //循环加载viewpager
-        for (int i=0;i<2;i++ ){
+        for (int i = 0; i < weather_date.size(); i++) {
             getWeather((String) list.get(i));
-            views.add(getLayoutInflater().inflate(R.layout.mian,null));
+            views.add(getLayoutInflater().inflate(R.layout.mian, null));
         }
     }
 
 
     //加载天气
-    public void getWeather(String city){
+    public void getWeather(String city) {
 
-        if(TextUtils.isEmpty(city)){
-            Toast.makeText(this,"请输入城市",Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(city)) {
+            Toast.makeText(this, "请输入城市", Toast.LENGTH_SHORT).show();
             return;
         }
         String url = getString(R.string.weatherurl);
@@ -139,23 +174,23 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 OkHttpClient okHttpClient = new OkHttpClient();
                 final Request request = new Request.Builder()
-                        .url(url+city)
+                        .url(url + city)
                         .get()
                         .build();
                 Call call = okHttpClient.newCall(request);
-                System.out.println(call+"------");
+                System.out.println(call + "------");
                 System.out.println(request);
-                call.enqueue(new WeatherCallback(){
+                call.enqueue(new WeatherCallback() {
                     @Override
                     public void onComplete(TodayWeather todayWeather) {
                         //Log.d("tag", String.valueOf(todayWeather));
 
-                        info=todayWeather;
+                        info = todayWeather;
                         list1.add(info);
-                        weather_date.put(city,todayWeather);
-                        Log.d("EEE",list1.size()+"");
-                        if (list1.size()==2){
-                            if(todayWeather != null){
+                        weather_date.put(city, todayWeather);
+                        Log.d("EEE", list1.size() + "");
+                        if (list1.size() == weather_date.size()) {
+                            if (todayWeather != null) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -182,53 +217,67 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
     private void updateUI(TodayWeather info) {
-        if(info.getWendu() == null){
-            Toast.makeText(MainActivity.this,"请输入正确的城市名称！", Toast.LENGTH_SHORT).show();
+        if (info.getWendu() == null) {
+            Toast.makeText(MainActivity.this, "请输入正确的城市名称！", Toast.LENGTH_SHORT).show();
             return;
         }
 
         type.setText(info.getList().get(1).getType());
-        switch (info.getList().get(1).getType()){
+        switch (info.getList().get(1).getType()) {
             case "小雨":
             case "雨":
             case "大雨":
                 main_beijin.setImageResource(R.mipmap.beijin_xiayu);
+                break;
+            case "多云":
+            case "阴":
+                main_beijin.setImageResource(R.mipmap.yin);
+                break;
         }
         city.setText(info.getCity());
-        ed_wendu.setText(info.getWendu()+"℃");
-        WeatherAdapter weatherAdapter = new WeatherAdapter(this,R.layout.weather_item,info.getList());
+        ed_wendu.setText(info.getWendu() + "°");
+        WeatherAdapter weatherAdapter = new WeatherAdapter(this, R.layout.weather_item, info.getList());
         listView.setAdapter(weatherAdapter);
 
 
     }
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
                     TodayWeather info = (TodayWeather) msg.obj;
-                    if(info == null){
+                    if (info == null) {
                         info.getCity();
-                        Toast.makeText(MainActivity.this,"请输入正确的城市名称" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "请输入正确的城市名称", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     //list1.add(info);
                     updateUI(info);
-                    useSp(info.getCity());
+                    //useSp(info.getCity());
                     break;
                 case 0:
                     String str = (String) msg.obj;
-                    Toast.makeText(MainActivity.this,str , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
                     finish();
                     break;
 
             }
         }
     };
-    public void useSp(String city){
+
+    public void gettime() {
+        //获取单前时间
+        Time t = new Time(); // or Time t=new Time("GMT+8"); 加上Time Zone资料
+        t.setToNow();
+        int m = t.month;
+        int r = t.monthDay;
+        Time = m + 1 + "/" + r;
+        Log.d("www", m + 1 + "/" + r);
+    }
+    /*public void useSp(String city){
         SharedPreferences sp = getSharedPreferences("citys", Activity.MODE_PRIVATE);//创建sp对象,如果有key为"SP_PEOPLE"的sp就取出
         String citys = sp.getString("citys","");  //取出key为"KEY_PEOPLE_DATA"的值，如果值为空，则将第二个参数作为默认值赋值
         List<String> citylist = new ArrayList<>();
@@ -252,5 +301,5 @@ public class MainActivity extends BaseActivity {
             editor.putString("citys", json);
             editor.commit() ;
         }
-    }
+    }*/
 }
