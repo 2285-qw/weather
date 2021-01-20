@@ -74,15 +74,12 @@ public class LocationActivity extends AppCompatActivity {
         }
     }
 
-    /***
-     * Stop location service
-     */
+
     @Override
     protected void onStop() {
         // TODO Auto-generated method stub
         locationService.unregisterListener(mListener); //注销掉监听
         locationService.stop(); //停止定位服务
-
         super.onStop();
     }
 

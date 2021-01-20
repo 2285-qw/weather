@@ -8,4 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="newbule">#82bfff</color>
+    <color name="gray_9">#999999</color>
+    <color name="gray_6">#666666</color>
+    <color name="gray_f8">#F8F8F8</color>
+    <color name="mainGray">#F2F6F7</color>
+    <color name="mainColor">#6BC8EC</color>
+    <color name="light_main">#94D9F4</color>
 </resources>
