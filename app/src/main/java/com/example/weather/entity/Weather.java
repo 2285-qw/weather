@@ -1,6 +1,8 @@
 package com.example.weather.entity;
 
-public class Weather {
+import java.io.Serializable;
+
+public class Weather implements Serializable {
     private String date;    //"date":"25日星期五",
     private String high;    //"high":"高温 9℃",
     private String fengli;  //"fengli":"&lt;![CDATA[2级]]&gt;",

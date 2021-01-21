@@ -19,6 +19,7 @@ public class WeatherCallback extends IConvertCallback<TodayWeather> {
     public void onSuccess(String responce) {
         Log.d("mylog","onResponse: " + responce);
         List<Weather> list = new ArrayList<>();
+
         TodayWeather todayWeather = new TodayWeather();
         list = JsonParser.WeatherParser(responce);
         todayWeather.setList(list);
@@ -26,6 +27,7 @@ public class WeatherCallback extends IConvertCallback<TodayWeather> {
             JSONObject jsonObject = new JSONObject(responce);
             String json = jsonObject.getString("data");
             JSONObject jo = new JSONObject(json);
+
             todayWeather.setNote(jo.getString("ganmao"));
             todayWeather.setWendu(jo.getString("wendu"));
             todayWeather.setCity(jo.getString("city"));

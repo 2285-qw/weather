@@ -30,7 +30,7 @@
         <activity android:name=".ui.AddcityActivity"></activity>
         <activity android:name=".ui.City_choiceActivity" /> <!-- 定位页面 -->
         <activity android:name=".ui.LocationActivity" /> <!-- 主页面 -->
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

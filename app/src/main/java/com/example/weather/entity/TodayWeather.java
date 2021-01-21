@@ -1,13 +1,20 @@
 package com.example.weather.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TodayWeather {
+public class TodayWeather implements Serializable {
     private String wendu;
     private String city;
     private String note;
     private int aqi;
+
+    public TodayWeather() {
+        super();
+    }
+
+
 
     public List<Weather> getList() {
         return list;
@@ -61,4 +68,7 @@ public class TodayWeather {
     public Weather get(int i) {
         return list.get(i);
     }
+
+
+
 }

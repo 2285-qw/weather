@@ -41,6 +41,10 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import static com.example.weather.util.OutputUtil.fileIsExists;
+import static com.example.weather.util.OutputUtil.readObjectFromLocal;
+import static com.example.weather.util.OutputUtil.writeObjectIntoLocal;
+
 public class MainActivity extends BaseActivity {
 
     ViewPager mviewPager;
@@ -63,6 +67,8 @@ public class MainActivity extends BaseActivity {
     TodayWeather info;
     //月日
     String Time;
+    //天气数据本地储存名
+    String map1;
 
 
     @Override
@@ -72,15 +78,20 @@ public class MainActivity extends BaseActivity {
 
         list = new ArrayList();
         list1 = new ArrayList<>();
-        weather_date = new HashMap<String, TodayWeather>();
+        weather_date = new HashMap();
         weather_date.put("天津", null);
         weather_date.put("长沙", null);
         weather_date.put("北京", null);
 
+        for(String key : weather_date.keySet()){
+            list.add(key);
+            System.out.println(key);
+        }
 
-        list.add("天津");
-        list.add("长沙");
-        list.add("北京");
+        map1="map11";
+        fileIsExists(map1);
+        Log.d("xxx",fileIsExists(map1)+"");
+
         initView();
 
     }
@@ -102,7 +113,6 @@ public class MainActivity extends BaseActivity {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             Log.d("xxxx", "instantiateItem: position = " + position);
             container.addView((View) views.get(position));
-
             TextView time = ((View) views.get(position)).findViewById(R.id.time);
             location = ((View) views.get(position)).findViewById(R.id.location);
             ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
@@ -148,6 +158,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
+        weather_date=readObjectFromLocal(getApplicationContext(),map1);
         mviewPager = findViewById(R.id.viewPager);
         mviewPager.setOffscreenPageLimit(3);
         views = new ArrayList();
@@ -158,6 +169,10 @@ public class MainActivity extends BaseActivity {
             getWeather((String) list.get(i));
             views.add(getLayoutInflater().inflate(R.layout.mian, null));
         }
+
+
+        mviewPager.setAdapter(new MyPagerAdapter());
+
     }
 
 
@@ -188,15 +203,22 @@ public class MainActivity extends BaseActivity {
                         info = todayWeather;
                         list1.add(info);
                         weather_date.put(city, todayWeather);
-                        Log.d("EEE", list1.size() + "");
+                        Log.d("EEE", list1.size() + "list1.size()");
+                        Log.d("EEE", weather_date.size() + "weather_date.size()");
                         if (list1.size() == weather_date.size()) {
                             if (todayWeather != null) {
+
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //网络加载数据完成设置viewpager的Adapter
                                         mviewPager.setAdapter(new MyPagerAdapter());
 
+                                        boolean op=writeObjectIntoLocal(getApplicationContext(),map1,weather_date);
+                                        Log.d("aaa","op"+op);
+
+                                        Map setmap=readObjectFromLocal(getApplicationContext(),map1);
+                                        Log.d("map",weather_date+"---"+setmap);
                                     }
                                 });
                             }
@@ -208,7 +230,7 @@ public class MainActivity extends BaseActivity {
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         Message msg = Message.obtain();
                         msg.what = 0;
-                        msg.obj = "获取天气失败";
+                        msg.obj = "更新天气失败，请检查网络连接是否正常";
                         handler.sendMessage(msg);
                     }
                 });
@@ -254,14 +276,10 @@ public class MainActivity extends BaseActivity {
                         Toast.makeText(MainActivity.this, "请输入正确的城市名称", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    //list1.add(info);
-                    updateUI(info);
-                    //useSp(info.getCity());
                     break;
                 case 0:
                     String str = (String) msg.obj;
                     Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
-                    finish();
                     break;
 
             }
@@ -277,29 +295,5 @@ public class MainActivity extends BaseActivity {
         Time = m + 1 + "/" + r;
         Log.d("www", m + 1 + "/" + r);
     }
-    /*public void useSp(String city){
-        SharedPreferences sp = getSharedPreferences("citys", Activity.MODE_PRIVATE);//创建sp对象,如果有key为"SP_PEOPLE"的sp就取出
-        String citys = sp.getString("citys","");  //取出key为"KEY_PEOPLE_DATA"的值，如果值为空，则将第二个参数作为默认值赋值
-        List<String> citylist = new ArrayList<>();
-        String json = "";
-        Gson gson = new Gson();
-        SharedPreferences.Editor editor = sp.edit() ;
-        if(citys!="")  //防空判断
-        {
-            citylist = gson.fromJson(citys, new TypeToken<List<String>>() {}.getType()); //将json字符串转换成List集合
-            if(citylist.contains(city)){
-                return;
-            }else{
-                citylist.add(city);
-                json = gson.toJson(citylist);
-                editor.putString("citys", json) ; //存入json串
-                editor.commit() ;
-            }
-        }else{
-            citylist.add(city);
-            json = gson.toJson(citylist);
-            editor.putString("citys", json);
-            editor.commit() ;
-        }
-    }*/
+
 }
