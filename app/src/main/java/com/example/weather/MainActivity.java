@@ -68,110 +68,61 @@ public class MainActivity extends BaseActivity {
     //月日
     String Time;
     //天气数据本地储存名
-    String map1;
-
+    public static String map1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        list = new ArrayList();
-        list1 = new ArrayList<>();
-        weather_date = new HashMap();
+        /*weather_date = new HashMap();
         weather_date.put("天津", null);
         weather_date.put("长沙", null);
-        weather_date.put("北京", null);
+        weather_date.put("北京", null);*/
+        map1 = "map11";
+    }
 
-        for(String key : weather_date.keySet()){
+    @Override
+    protected void onResume() {
+        setContentView(R.layout.activity_main);
+        list = new ArrayList();
+        list1 = new ArrayList<>();
+        //从本地读取map天气集合
+        weather_date = readObjectFromLocal(getApplicationContext(), map1);
+        for (String key : weather_date.keySet()) {
             list.add(key);
             System.out.println(key);
         }
 
-        map1="map11";
         fileIsExists(map1);
-        Log.d("xxx",fileIsExists(map1)+"");
+        Log.d("xxx", fileIsExists(map1) + "");
 
         initView();
-
+        super.onResume();
     }
 
-    class MyPagerAdapter extends PagerAdapter implements View.OnClickListener {
-
-        @Override
-        public int getCount() {
-            return views.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return view == object;
-        }
-
-        @NonNull
-        @Override
-        public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            Log.d("xxxx", "instantiateItem: position = " + position);
-            container.addView((View) views.get(position));
-            TextView time = ((View) views.get(position)).findViewById(R.id.time);
-            location = ((View) views.get(position)).findViewById(R.id.location);
-            ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
-            listView = ((View) views.get(position)).findViewById(R.id.list_weather);
-            city = ((View) views.get(position)).findViewById(R.id.city);
-            type = ((View) views.get(position)).findViewById(R.id.weather);
-            main_beijin = ((View) views.get(position)).findViewById(R.id.main_beijin);
-            add_city = ((View) views.get(position)).findViewById(R.id.add_city);
-
-            time.setText(Time + "");
-
-            city.setOnClickListener(this);
-            add_city.setOnClickListener(this);
-
-            if (position == 0) {
-                location.setImageResource(R.mipmap.location);
-            }
-
-            if (weather_date.get(list.get(position)) != null) {
-                updateUI(weather_date.get(list.get(position)));
-                //updateUI(list1.get(position));
-            }
-            return views.get(position);
-        }
-
-        @Override
-        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            //super.destroyItem(container, position, object);
-            container.removeView((View) views.get(position));
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.city:
-                    startActivity(new Intent(MainActivity.this, City_choiceActivity.class));
-                    break;
-                case R.id.add_city:
-                    startActivity(new Intent(MainActivity.this, AddcityActivity.class));
-                    break;
-            }
-        }
-    }
 
     private void initView() {
-        weather_date=readObjectFromLocal(getApplicationContext(),map1);
+        //weather_date=readObjectFromLocal(getApplicationContext(),map1);
+        Log.d("weather_date", weather_date + "");
         mviewPager = findViewById(R.id.viewPager);
         mviewPager.setOffscreenPageLimit(3);
         views = new ArrayList();
         //获取当前时间
         gettime();
+        //读取本地文件失败
+        if (weather_date == null) {
+            weather_date.put("北京", null);
+        }
         //循环加载viewpager
+
         for (int i = 0; i < weather_date.size(); i++) {
             getWeather((String) list.get(i));
             views.add(getLayoutInflater().inflate(R.layout.mian, null));
         }
 
+        if (weather_date.get(list.get(0)) != null) {
+            mviewPager.setAdapter(new MyPagerAdapter());
+        }
 
-        mviewPager.setAdapter(new MyPagerAdapter());
 
     }
 
@@ -207,18 +158,17 @@ public class MainActivity extends BaseActivity {
                         Log.d("EEE", weather_date.size() + "weather_date.size()");
                         if (list1.size() == weather_date.size()) {
                             if (todayWeather != null) {
-
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //网络加载数据完成设置viewpager的Adapter
                                         mviewPager.setAdapter(new MyPagerAdapter());
 
-                                        boolean op=writeObjectIntoLocal(getApplicationContext(),map1,weather_date);
-                                        Log.d("aaa","op"+op);
+                                        boolean op = writeObjectIntoLocal(getApplicationContext(), map1, weather_date);
+                                        Log.d("aaa", "op" + op);
 
-                                        Map setmap=readObjectFromLocal(getApplicationContext(),map1);
-                                        Log.d("map",weather_date+"---"+setmap);
+                                        Map setmap = readObjectFromLocal(getApplicationContext(), map1);
+                                        Log.d("map", weather_date + "---" + setmap);
                                     }
                                 });
                             }
@@ -294,6 +244,70 @@ public class MainActivity extends BaseActivity {
         int r = t.monthDay;
         Time = m + 1 + "/" + r;
         Log.d("www", m + 1 + "/" + r);
+    }
+
+    class MyPagerAdapter extends PagerAdapter implements View.OnClickListener {
+
+        @Override
+        public int getCount() {
+            return views.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            Log.d("xxxx", "instantiateItem: position = " + position);
+            container.addView((View) views.get(position));
+            TextView time = ((View) views.get(position)).findViewById(R.id.time);
+            location = ((View) views.get(position)).findViewById(R.id.location);
+            ed_wendu = ((View) views.get(position)).findViewById(R.id.ed_wendu);
+            listView = ((View) views.get(position)).findViewById(R.id.list_weather);
+            city = ((View) views.get(position)).findViewById(R.id.city);
+            type = ((View) views.get(position)).findViewById(R.id.weather);
+            main_beijin = ((View) views.get(position)).findViewById(R.id.main_beijin);
+            add_city = ((View) views.get(position)).findViewById(R.id.add_city);
+
+            city.setText((CharSequence) list.get(position));
+
+            time.setText(Time + "");
+
+            city.setOnClickListener(this);
+            add_city.setOnClickListener(this);
+
+            if (position == 0) {
+                location.setImageResource(R.mipmap.location);
+            }
+
+            if (weather_date.get(list.get(position)) != null) {
+                updateUI(weather_date.get(list.get(position)));
+                //updateUI(list1.get(position));
+            }
+            return views.get(position);
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View) views.get(position));
+            //super.destroyItem(container, position, object);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.city:
+                    startActivity(new Intent(MainActivity.this, City_choiceActivity.class));
+                    break;
+                case R.id.add_city:
+                    startActivity(new Intent(MainActivity.this, AddcityActivity.class));
+                    break;
+            }
+        }
     }
 
 }

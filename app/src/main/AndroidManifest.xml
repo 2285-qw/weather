@@ -28,14 +28,18 @@
         android:theme="@style/Theme.Weather"
         android:usesCleartextTraffic="true">
         <activity android:name=".ui.AddcityActivity"></activity>
-        <activity android:name=".ui.City_choiceActivity" /> <!-- 定位页面 -->
-        <activity android:name=".ui.LocationActivity" /> <!-- 主页面 -->
-        <activity android:name=".MainActivity" android:launchMode="singleInstance">
+        <activity android:name=".ui.City_choiceActivity" />
+        <!-- 定位页面 -->
+        <activity android:name=".ui.LocationActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <!-- 主页面 -->
+        <activity android:name=".MainActivity" android:launchMode="singleInstance">
+
         </activity> <!-- 声明service组件 -->
         <service
             android:name="com.baidu.location.f"

@@ -28,7 +28,7 @@ public class LocationActivity extends AppCompatActivity {
     private TextView LocationResult;
     private TextView LocationDiagnostic;
     private Button startLocation;
-    private  String location1;
+    private  String location1="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,9 @@ public class LocationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location);
         LocationResult = (TextView) findViewById(R.id.textView1);
         LocationDiagnostic = (TextView) findViewById(R.id.textView2);
+
         LocationResult.setMovementMethod(ScrollingMovementMethod.getInstance());
+
         startLocation = (Button) findViewById(R.id.addfence);
     }
 
@@ -98,23 +100,25 @@ public class LocationActivity extends AppCompatActivity {
         } else if (type == 1) {
             locationService.start();
         }
+
         startLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 locationService.start();// 定位SDK
-                if (!location1.isEmpty()){
+                if (location1.isEmpty()){
                     startLocation.setText(location1);
                 }else{
-                    Toast.makeText(LocationActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
+                    //定位成功后的操作
+
                 }
-//                if (startLocation.getText().toString().equals(getString(R.string.startlocation))) {
-//                    locationService.start();// 定位SDK
-//                    // start之后会默认发起一次定位请求，开发者无须判断isstart并主动调用request
-//                    startLocation.setText(getString(R.string.stoplocation));
-//                } else {
-//                    locationService.stop();
-//                    startLocation.setText(getString(R.string.startlocation));
-//                }
+                /*if (startLocation.getText().toString().equals(getString(R.string.startlocation))) {
+                    locationService.start();// 定位SDK
+                    // start之后会默认发起一次定位请求，开发者无须判断isstart并主动调用request
+                    startLocation.setText(getString(R.string.stoplocation));
+                } else {
+                    locationService.stop();
+                    startLocation.setText(getString(R.string.startlocation));
+                }*/
             }
         });
     }
@@ -143,7 +147,14 @@ public class LocationActivity extends AppCompatActivity {
                  * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间
                  *                  * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变；
                  */
-                location1=location.getProvince();
+                location1=location.getCity();
+
+                if (!location1.isEmpty()){
+                    startLocation.setText(location1);
+                    locationService.stop();
+                }else {
+                    Toast.makeText(LocationActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
+                }
                 sb.append(location.getTime());
                 sb.append("\nProvince : ");// 获取省份
                 sb.append(location.getProvince());

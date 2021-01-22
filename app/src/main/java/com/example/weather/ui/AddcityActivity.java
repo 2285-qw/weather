@@ -12,9 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.ActionBar;
@@ -41,19 +44,34 @@ import com.example.weather.MainActivity;
 import com.example.weather.R;
 import com.example.weather.binding.Bind;
 import com.example.weather.binding.ViewBinder;
+import com.example.weather.cb.impl.WeatherCallback;
+import com.example.weather.entity.TodayWeather;
 import com.example.weather.model.CityEntity;
 import com.example.weather.util.JsonReadUtil;
 import com.example.weather.util.ScreenUtils;
 import com.example.weather.util.ToastUtils;
 import com.example.weather.view.LetterListView;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+
+import static com.example.weather.MainActivity.list;
+import static com.example.weather.MainActivity.map1;
+import static com.example.weather.MainActivity.weather_date;
+import static com.example.weather.util.OutputUtil.readObjectFromLocal;
+import static com.example.weather.util.OutputUtil.writeObjectIntoLocal;
 
 public class AddcityActivity extends AppCompatActivity implements AbsListView.OnScrollListener, View.OnClickListener {
 
@@ -183,7 +201,6 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             }
         });
     }
-
 
     /**
      * 设置搜索数据展示
@@ -631,13 +648,14 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);  //先得到构造器
         builder.setTitle("提示"); //设置标题
-        builder.setMessage("是否设置 " + curCity + " 为您的当前城市？"); //设置内容
+        builder.setMessage("是否添加" + curCity + "的天气预报？"); //设置内容
 
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() { //设置确定按钮
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 //选中之后做你的方法
+                getWeather(curCity);
 
             }
         });
@@ -686,5 +704,59 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             actionBar.hide();
 
         }
+    }
+
+    //加载天气
+    public void getWeather(String city) {
+
+        if (TextUtils.isEmpty(city)) {
+            Toast.makeText(this, "请输入城市", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String url = getString(R.string.weatherurl);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                final Request request = new Request.Builder()
+                        .url(url + city)
+                        .get()
+                        .build();
+                Call call = okHttpClient.newCall(request);
+                System.out.println(call + "------");
+                System.out.println(request);
+                call.enqueue(new WeatherCallback() {
+                    @Override
+                    public void onComplete(TodayWeather todayWeather) {
+                            if (todayWeather.getWendu() == null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(AddcityActivity.this, "当前城市暂时查询不到信息", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                return;
+                            }else {
+                                weather_date=readObjectFromLocal(getApplicationContext(),map1);
+                                weather_date.put(city,todayWeather);
+                                list.add(city);
+                                writeObjectIntoLocal(getApplicationContext(),map1,weather_date);
+                                startActivity(new Intent(AddcityActivity.this,MainActivity.class));
+                                finish();
+                            }
+                        }
+
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(AddcityActivity.this, "请检查您的网络连接是否正常", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+            }
+        }).start();
     }
 }

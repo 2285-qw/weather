@@ -20,7 +20,9 @@ import com.example.weather.MainActivity;
 import com.example.weather.R;
 
 import static com.example.weather.MainActivity.list;
+import static com.example.weather.MainActivity.map1;
 import static com.example.weather.MainActivity.weather_date;
+import static com.example.weather.util.OutputUtil.writeObjectIntoLocal;
 
 public class City_choiceActivity extends AppCompatActivity implements View.OnClickListener {
     ImageView return_button;
@@ -150,11 +152,12 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
                 @Override
                 public void onClick(View v) {
                     //finalView.setVisibility(View.GONE);
-                    if (position == 0) {
+                    if (weather_date.size()==1) {
                         Toast.makeText(City_choiceActivity.this, "如法删除此做城市", Toast.LENGTH_SHORT).show();
                     } else {
                         weather_date.remove(list.get(position));
                         list.remove(position);
+                        writeObjectIntoLocal(getApplicationContext(),map1,weather_date);
                         notifyDataSetChanged();
                     }
 
