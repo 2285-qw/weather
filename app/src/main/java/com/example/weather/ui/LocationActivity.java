@@ -24,10 +24,14 @@ import com.example.weather.service.LocationService;
 import com.example.weather.service.Utils;
 
 public class LocationActivity extends AppCompatActivity {
-    private LocationService locationService;
+
     private TextView LocationResult;
     private TextView LocationDiagnostic;
     private Button startLocation;
+
+    //位置获取后台
+    private LocationService locationService;
+    //记录市的字符串
     private  String location1="";
 
     @Override
@@ -36,11 +40,14 @@ public class LocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // -----------demo view config ------------
         setContentView(R.layout.activity_location);
+
+
+
         LocationResult = (TextView) findViewById(R.id.textView1);
         LocationDiagnostic = (TextView) findViewById(R.id.textView2);
 
-        LocationResult.setMovementMethod(ScrollingMovementMethod.getInstance());
 
+        LocationResult.setMovementMethod(ScrollingMovementMethod.getInstance());
         startLocation = (Button) findViewById(R.id.addfence);
     }
 

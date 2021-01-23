@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
     //月日
     String Time;
     //天气数据本地储存名
-    public static String map1;
+    public static String map1  = "map11";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity {
         weather_date.put("天津", null);
         weather_date.put("长沙", null);
         weather_date.put("北京", null);*/
-        map1 = "map11";
+
     }
 
     @Override
@@ -86,6 +86,7 @@ public class MainActivity extends BaseActivity {
         list = new ArrayList();
         list1 = new ArrayList<>();
         //从本地读取map天气集合
+
         weather_date = readObjectFromLocal(getApplicationContext(), map1);
         for (String key : weather_date.keySet()) {
             list.add(key);

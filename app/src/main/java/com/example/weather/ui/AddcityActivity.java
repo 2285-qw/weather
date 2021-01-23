@@ -16,6 +16,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridView;
@@ -40,6 +42,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
 import com.example.weather.MainActivity;
 import com.example.weather.R;
 import com.example.weather.binding.Bind;
@@ -47,6 +51,8 @@ import com.example.weather.binding.ViewBinder;
 import com.example.weather.cb.impl.WeatherCallback;
 import com.example.weather.entity.TodayWeather;
 import com.example.weather.model.CityEntity;
+import com.example.weather.service.LocationService;
+import com.example.weather.service.Utils;
 import com.example.weather.util.JsonReadUtil;
 import com.example.weather.util.ScreenUtils;
 import com.example.weather.util.ToastUtils;
@@ -70,6 +76,7 @@ import okhttp3.Request;
 import static com.example.weather.MainActivity.list;
 import static com.example.weather.MainActivity.map1;
 import static com.example.weather.MainActivity.weather_date;
+import static com.example.weather.util.OutputUtil.fileIsExists;
 import static com.example.weather.util.OutputUtil.readObjectFromLocal;
 import static com.example.weather.util.OutputUtil.writeObjectIntoLocal;
 
@@ -92,6 +99,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
     private TextView noSearchDataTv;
     @Bind(R.id.return_button1)
     private ImageView return_button;
+    @Bind(R.id.yisi)
+    private TextView yisi;
 
     private Handler handler;
     private TextView overlay; // 对话框首字母TextView
@@ -110,12 +119,17 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
 
     private String locationCity, curSelCity;
 
+    //位置获取后台
+    private LocationService locationService;
+    //记录市的字符串
+    private  String location1="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 默认软键盘不弹出
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         //setSystemBarTransparent();
+
 
         setContentView(R.layout.activity_addcity);
 
@@ -138,6 +152,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
         searchCityLv.setAdapter(searchCityListAdapter);
         locationCity = "定位";
         curSelCity = locationCity;
+
+        yisi.setOnClickListener(this);
     }
 
     private void initData() {
@@ -312,6 +328,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                 startActivity(new Intent(AddcityActivity.this, MainActivity.class));
                 finish();
                 break;
+            case R.id.yisi:
+                startActivity(new Intent(AddcityActivity.this, yisiActivity.class));
         }
     }
 
@@ -737,9 +755,15 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                                 });
                                 return;
                             }else {
-                                weather_date=readObjectFromLocal(getApplicationContext(),map1);
+                                if (fileIsExists(map1)){
+                                    weather_date=readObjectFromLocal(getApplicationContext(),map1);
+                                }else {
+                                    weather_date=new HashMap<>();
+                                    list=new ArrayList();
+                                }
                                 weather_date.put(city,todayWeather);
                                 list.add(city);
+                                Log.d("weather_date",weather_date+"");
                                 writeObjectIntoLocal(getApplicationContext(),map1,weather_date);
                                 startActivity(new Intent(AddcityActivity.this,MainActivity.class));
                                 finish();
@@ -759,4 +783,156 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             }
         }).start();
     }
-}
+
+    @Override
+    protected void onStop() {
+        // TODO Auto-generated method stub
+        locationService.unregisterListener(mListener); //注销掉监听
+        locationService.stop(); //停止定位服务
+        super.onStop();
+    }
+
+    /*****
+     *
+     * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
+     *
+     */
+    private BDAbstractLocationListener mListener = new BDAbstractLocationListener() {
+
+        /**
+         * 定位请求回调函数
+         * @param location 定位结果
+         */
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+
+            // TODO Auto-generated method stub
+            if (null != location && location.getLocType() != BDLocation.TypeServerError) {
+                int tag = 1;
+                StringBuffer sb = new StringBuffer(256);
+                sb.append("time : ");
+                /**
+                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间
+                 *                  * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变；
+                 */
+                location1=location.getCity();
+
+                if (!location1.isEmpty()){
+                    //startLocation.setText(location1);
+                    locationService.stop();
+                }else {
+                    Toast.makeText(AddcityActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
+                }
+                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
+                    sb.append("\ndescribe : ");
+                    sb.append("gps定位成功");
+                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
+                    // 运营商信息
+                    if (location.hasAltitude()) {// *****如果有海拔高度*****
+                        sb.append("\nheight : ");
+                        sb.append(location.getAltitude());// 单位：米
+                    }
+                    sb.append("\noperationers : ");// 运营商信息
+                    sb.append(location.getOperators());
+                    sb.append("\ndescribe : ");
+                    sb.append("网络定位成功");
+                } else if (location.getLocType() == BDLocation.TypeServerError) {
+                    sb.append("\ndescribe : ");
+                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
+                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
+                    sb.append("\ndescribe : ");
+                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
+                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
+                    sb.append("\ndescribe : ");
+                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
+                }
+                logMsg(sb.toString(), tag);
+            }
+        }
+
+        @Override
+        public void onConnectHotSpotMessage(String s, int i) {
+            super.onConnectHotSpotMessage(s, i);
+        }
+
+        /**
+         * 回调定位诊断信息，开发者可以根据相关信息解决定位遇到的一些问题
+         * @param locType 当前定位类型
+         * @param diagnosticType 诊断类型（1~9）
+         * @param diagnosticMessage 具体的诊断信息释义
+         */
+        @Override
+        public void onLocDiagnosticMessage(int locType, int diagnosticType, String diagnosticMessage) {
+            super.onLocDiagnosticMessage(locType, diagnosticType, diagnosticMessage);
+            int tag = 2;
+            StringBuffer sb = new StringBuffer(256);
+            sb.append("诊断结果: ");
+            if (locType == BDLocation.TypeNetWorkLocation) {
+                if (diagnosticType == 1) {
+                    sb.append("网络定位成功，没有开启GPS，建议打开GPS会更好");
+                    sb.append("\n" + diagnosticMessage);
+                } else if (diagnosticType == 2) {
+                    sb.append("网络定位成功，没有开启Wi-Fi，建议打开Wi-Fi会更好");
+                    sb.append("\n" + diagnosticMessage);
+                }
+            } else if (locType == BDLocation.TypeOffLineLocationFail) {
+                if (diagnosticType == 3) {
+                    sb.append("定位失败，请您检查您的网络状态");
+                    sb.append("\n" + diagnosticMessage);
+                }
+            } else if (locType == BDLocation.TypeCriteriaException) {
+                if (diagnosticType == 4) {
+                    sb.append("定位失败，无法获取任何有效定位依据");
+                    sb.append("\n" + diagnosticMessage);
+                } else if (diagnosticType == 5) {
+                    sb.append("定位失败，无法获取有效定位依据，请检查运营商网络或者Wi-Fi网络是否正常开启，尝试重新请求定位");
+                    sb.append(diagnosticMessage);
+                } else if (diagnosticType == 6) {
+                    sb.append("定位失败，无法获取有效定位依据，请尝试插入一张sim卡或打开Wi-Fi重试");
+                    sb.append("\n" + diagnosticMessage);
+                } else if (diagnosticType == 7) {
+                    sb.append("定位失败，飞行模式下无法获取有效定位依据，请关闭飞行模式重试");
+                    sb.append("\n" + diagnosticMessage);
+                } else if (diagnosticType == 9) {
+                    sb.append("定位失败，无法获取任何有效定位依据");
+                    sb.append("\n" + diagnosticMessage);
+                }
+            } else if (locType == BDLocation.TypeServerError) {
+                if (diagnosticType == 8) {
+                    sb.append("定位失败，请确认您定位的开关打开状态，是否赋予APP定位权限");
+                    sb.append("\n" + diagnosticMessage);
+                }
+            }
+            logMsg(sb.toString(), tag);
+        }
+    };
+
+    /**
+     * 显示请求字符串
+     *
+     * @param str
+     */
+    public void logMsg(final String str, final int tag) {
+
+        try {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                                if (tag == Utils.RECEIVE_TAG) {
+                                    Toast.makeText(AddcityActivity.this, "str", Toast.LENGTH_SHORT).show();
+                                    Log.d("tag",str);
+                                } else if (tag == Utils.DIAGNOSTIC_TAG) {
+                                    //LocationDiagnostic.setText(str);
+                                    Toast.makeText(AddcityActivity.this, "str", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+
+                }).start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    }
