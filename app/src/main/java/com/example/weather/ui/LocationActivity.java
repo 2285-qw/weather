@@ -41,8 +41,6 @@ public class LocationActivity extends AppCompatActivity {
         // -----------demo view config ------------
         setContentView(R.layout.activity_location);
 
-
-
         LocationResult = (TextView) findViewById(R.id.textView1);
         LocationDiagnostic = (TextView) findViewById(R.id.textView2);
 

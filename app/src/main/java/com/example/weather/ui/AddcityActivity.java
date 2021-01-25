@@ -46,6 +46,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.example.weather.MainActivity;
 import com.example.weather.R;
+import com.example.weather.application.BaseApplication;
 import com.example.weather.binding.Bind;
 import com.example.weather.binding.ViewBinder;
 import com.example.weather.cb.impl.WeatherCallback;
@@ -122,7 +123,9 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
     //位置获取后台
     private LocationService locationService;
     //记录市的字符串
-    private  String location1="";
+    private  String location1="定位";
+
+    TextView curCityNameTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -393,7 +396,6 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            final TextView curCityNameTv;
             ViewHolder holder;
             int viewType = getItemViewType(position);
             if (viewType == 0) { // 定位
@@ -432,7 +434,13 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                                 }
                                 showSetCityDialog(locationCity, cityCode);
                             } else {
-                                ToastUtils.show("当前定位城市" + curCityNameTv.getText().toString());
+                                if (location1.isEmpty()){
+                                    locationService.start();// 定位SDK
+                                    curCityNameTv.setText(location1);
+                                }else{
+                                    //定位成功后的操作
+                                    showSetCityDialog(location1,null);
+                                }
                             }
                         }
                     });
@@ -673,7 +681,12 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 //选中之后做你的方法
-                getWeather(curCity);
+                if ( weather_date.containsKey(curCity)){
+                    Toast.makeText(AddcityActivity.this, "城市"+curCity+"已经存在", Toast.LENGTH_SHORT).show();
+                }else {
+                    getWeather(curCity);
+                }
+
 
             }
         });
@@ -716,11 +729,23 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
 
     protected void onStart() {
         super.onStart();
+        // -----------location config ------------
+        locationService = ((BaseApplication) getApplication()).locationService;
+        //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
+        locationService.registerListener(mListener);
+        //注册监听
+        int type = getIntent().getIntExtra("from", 0);
+        if (type == 0) {
+            locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        } else if (type == 1) {
+            locationService.start();
+        }
+        //开启定位
+        locationService.start();// 定位SDK
         //隐藏标题栏
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
-
         }
     }
 
@@ -784,6 +809,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
         }).start();
     }
 
+
+
     @Override
     protected void onStop() {
         // TODO Auto-generated method stub
@@ -810,15 +837,14 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             if (null != location && location.getLocType() != BDLocation.TypeServerError) {
                 int tag = 1;
                 StringBuffer sb = new StringBuffer(256);
-                sb.append("time : ");
-                /**
-                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间
-                 *                  * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变；
-                 */
-                location1=location.getCity();
+
+                if (!(location.getCity()==null)){
+                    location1=location.getCity();
+                }
 
                 if (!location1.isEmpty()){
                     //startLocation.setText(location1);
+                    curCityNameTv.setText(location1);
                     locationService.stop();
                 }else {
                     Toast.makeText(AddcityActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
@@ -832,18 +858,15 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                         sb.append("\nheight : ");
                         sb.append(location.getAltitude());// 单位：米
                     }
-                    sb.append("\noperationers : ");// 运营商信息
-                    sb.append(location.getOperators());
-                    sb.append("\ndescribe : ");
                     sb.append("网络定位成功");
                 } else if (location.getLocType() == BDLocation.TypeServerError) {
-                    sb.append("\ndescribe : ");
+                    //sb.append("\ndescribe : ");
                     sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
                 } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-                    sb.append("\ndescribe : ");
+                    //sb.append("\ndescribe : ");
                     sb.append("网络不同导致定位失败，请检查网络是否通畅");
                 } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-                    sb.append("\ndescribe : ");
+                    //sb.append("\ndescribe : ");
                     sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
                 }
                 logMsg(sb.toString(), tag);
@@ -866,7 +889,7 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             super.onLocDiagnosticMessage(locType, diagnosticType, diagnosticMessage);
             int tag = 2;
             StringBuffer sb = new StringBuffer(256);
-            sb.append("诊断结果: ");
+            //sb.append("诊断结果: ");
             if (locType == BDLocation.TypeNetWorkLocation) {
                 if (diagnosticType == 1) {
                     sb.append("网络定位成功，没有开启GPS，建议打开GPS会更好");
@@ -919,13 +942,19 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                     @Override
                     public void run() {
 
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
                                 if (tag == Utils.RECEIVE_TAG) {
-                                    Toast.makeText(AddcityActivity.this, "str", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AddcityActivity.this, str, Toast.LENGTH_SHORT).show();
                                     Log.d("tag",str);
                                 } else if (tag == Utils.DIAGNOSTIC_TAG) {
                                     //LocationDiagnostic.setText(str);
-                                    Toast.makeText(AddcityActivity.this, "str", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AddcityActivity.this, str, Toast.LENGTH_SHORT).show();
                                 }
+                            }
+                        });
+
                             }
 
 
