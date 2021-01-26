@@ -3,7 +3,9 @@ package com.example.weather.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
@@ -55,6 +57,11 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        //动态添加权限
+        ActivityCompat.requestPermissions(this, new String[]{StaticClass.Q_LOCATION0,StaticClass.Q_LOCATION1,StaticClass.Q_LOCATION2
+                ,StaticClass.Q_LOCATION3,StaticClass.Q_LOCATION4,StaticClass.Q_LOCATION5}, 0x11);
+
+        //判断是否第一次执行
         if(isFirst()){
             showSecurityDialog();
         }else {
@@ -109,7 +116,11 @@ public class SplashActivity extends BaseActivity {
                 securityDialog.dismiss();
                 //TODO 进入主界面
                 shareUtils.putBoolean(SplashActivity.this, StaticClass.SPLASH_IS_FIRST,false);
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                if (fileIsExists(map1)){
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                }else {
+                    startActivity(new Intent(SplashActivity.this, AddcityActivity.class));
+                }
                 finish();
             }
         });

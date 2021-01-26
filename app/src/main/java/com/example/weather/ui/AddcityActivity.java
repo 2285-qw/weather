@@ -681,12 +681,17 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 //选中之后做你的方法
-                if ( weather_date.containsKey(curCity)){
-                    Toast.makeText(AddcityActivity.this, "城市"+curCity+"已经存在", Toast.LENGTH_SHORT).show();
-                }else {
+                //判断文件是否存在
+                if (weather_date==null){
                     getWeather(curCity);
+                }else {
+                    //判断城市是否存在
+                    if ( weather_date.containsKey(curCity)){
+                        Toast.makeText(AddcityActivity.this, "城市"+curCity+"已经存在", Toast.LENGTH_SHORT).show();
+                    }else {
+                        getWeather(curCity);
+                    }
                 }
-
 
             }
         });
@@ -850,14 +855,9 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                     Toast.makeText(AddcityActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
                 }
                 if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-                    sb.append("\ndescribe : ");
+                    //sb.append("\ndescribe : ");
                     sb.append("gps定位成功");
                 } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-                    // 运营商信息
-                    if (location.hasAltitude()) {// *****如果有海拔高度*****
-                        sb.append("\nheight : ");
-                        sb.append(location.getAltitude());// 单位：米
-                    }
                     sb.append("网络定位成功");
                 } else if (location.getLocType() == BDLocation.TypeServerError) {
                     //sb.append("\ndescribe : ");

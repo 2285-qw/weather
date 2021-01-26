@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.relex.circleindicator.CircleIndicator;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -73,13 +74,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*weather_date = new HashMap();
-        weather_date.put("天津", null);
-        weather_date.put("长沙", null);
-        weather_date.put("北京", null);*/
 
     }
-
     @Override
     protected void onResume() {
         setContentView(R.layout.activity_main);
@@ -100,6 +96,13 @@ public class MainActivity extends BaseActivity {
         super.onResume();
     }
 
+    /**
+     * 实现小圆点指示器功能
+     * */
+    private void initCircleIndicator(){
+        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
+        indicator.setViewPager(mviewPager);
+    }
 
     private void initView() {
         //weather_date=readObjectFromLocal(getApplicationContext(),map1);
@@ -122,6 +125,7 @@ public class MainActivity extends BaseActivity {
 
         if (weather_date.get(list.get(0)) != null) {
             mviewPager.setAdapter(new MyPagerAdapter());
+            initCircleIndicator();
         }
 
 
@@ -164,7 +168,7 @@ public class MainActivity extends BaseActivity {
                                     public void run() {
                                         //网络加载数据完成设置viewpager的Adapter
                                         mviewPager.setAdapter(new MyPagerAdapter());
-
+                                        initCircleIndicator();
                                         boolean op = writeObjectIntoLocal(getApplicationContext(), map1, weather_date);
                                         Log.d("aaa", "op" + op);
 

@@ -3,6 +3,10 @@ plugins {
 }
 
 android {
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -57,4 +61,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.3.1")
     //添加gson支持
     implementation ('com.google.code.gson:gson:2.8.4')
+
+    //第三方库实现小圆点
+    implementation 'me.relex:circleindicator:2.1.4'
 }
