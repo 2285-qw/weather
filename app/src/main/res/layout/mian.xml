@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -13,12 +14,15 @@
         android:scaleType="fitXY"
         android:src="@mipmap/fine" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/line1"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -38,7 +42,8 @@
                 android:layout_marginLeft="5dp"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textStyle="bold"/>
 
 
             <TextView
@@ -54,12 +59,18 @@
                 android:src="@mipmap/mian_add" />
         </LinearLayout>
 
+        <LinearLayout
+            app:layout_constraintTop_toBottomOf="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <TextView
             android:id="@+id/ed_wendu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/white"
+            android:paddingLeft="6dp"
             android:textSize="80sp" />
 
         <TextView
@@ -79,10 +90,15 @@
             android:layout_gravity="center"
             android:textColor="@color/white"
             android:textSize="24sp" />
-
-        <LinearLayout
+        </LinearLayout>
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+           >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <ImageView
@@ -93,11 +109,14 @@
                 android:layout_marginTop="50dp"/>
 
             <ListView
+                android:layout_marginTop="160dp"
                 android:id="@+id/list_weather"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="250dp"
                 android:background="@color/white"
                 android:divider="@null" />
-        </LinearLayout>
-    </LinearLayout>
+        </RelativeLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </RelativeLayout>

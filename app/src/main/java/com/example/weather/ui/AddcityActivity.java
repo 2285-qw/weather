@@ -123,7 +123,9 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
     //位置获取后台
     private LocationService locationService;
     //记录市的字符串
-    private  String location1="定位";
+    private  String location1="";
+    //记录定位次数变量
+    int i;
 
     TextView curCityNameTv;
     @Override
@@ -133,6 +135,7 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         //setSystemBarTransparent();
 
+        i=0;
 
         setContentView(R.layout.activity_addcity);
 
@@ -423,26 +426,17 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                     curCityNameTv.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if (!locationCity.equals(curSelCity)) {
-                                //设置城市代码
-                                String cityCode = "";
-                                for (CityEntity cityEntity : curCityList) {
-                                    if (cityEntity.getName().equals(locationCity)) {
-                                        cityCode = cityEntity.getCityCode();
-                                        break;
-                                    }
-                                }
-                                showSetCityDialog(locationCity, cityCode);
-                            } else {
+
                                 if (location1.isEmpty()){
+                                    i=0;
                                     locationService.start();// 定位SDK
-                                    curCityNameTv.setText(location1);
+                                    //curCityNameTv.setText(location1);
                                 }else{
                                     //定位成功后的操作
                                     showSetCityDialog(location1,null);
                                 }
                             }
-                        }
+
                     });
                 }
             } else if (viewType == 1) { //热门城市
@@ -668,7 +662,7 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
      */
     private void showSetCityDialog(final String curCity, final String cityCode) {
         if (curCity.equals(curSelCity)) {
-            ToastUtils.show("当前定位城市" + curCity);
+            ToastUtils.show("当前定位城市" + curCity+"==="+location1);
             return;
         }
 
@@ -843,20 +837,24 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                 int tag = 1;
                 StringBuffer sb = new StringBuffer(256);
 
+                i++;
                 if (!(location.getCity()==null)){
                     location1=location.getCity();
                 }
 
+                if (i==3){
+                    locationService.stop();
+                }
                 if (!location1.isEmpty()){
                     //startLocation.setText(location1);
                     curCityNameTv.setText(location1);
                     locationService.stop();
                 }else {
-                    Toast.makeText(AddcityActivity.this, "定位失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddcityActivity.this, "定位失败,请你检查网络和gps是否开启", Toast.LENGTH_SHORT).show();
                 }
                 if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
                     //sb.append("\ndescribe : ");
-                    sb.append("gps定位成功");
+                    //sb.append("gps定位成功");
                 } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
                     sb.append("网络定位成功");
                 } else if (location.getLocType() == BDLocation.TypeServerError) {
@@ -945,12 +943,18 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (str.length()<2){
+
+                                    return;
+                                }else {
                                 if (tag == Utils.RECEIVE_TAG) {
                                     Toast.makeText(AddcityActivity.this, str, Toast.LENGTH_SHORT).show();
                                     Log.d("tag",str);
                                 } else if (tag == Utils.DIAGNOSTIC_TAG) {
                                     //LocationDiagnostic.setText(str);
                                     Toast.makeText(AddcityActivity.this, str, Toast.LENGTH_SHORT).show();
+                                    Log.d("tag",str);
+                                }
                                 }
                             }
                         });

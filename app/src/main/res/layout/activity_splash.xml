@@ -6,5 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.SplashActivity"
     android:background="@mipmap/splash">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@mipmap/splash"
+        android:scaleType="centerCrop">
+    </ImageView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.weather.R;
 import com.example.weather.entity.Weather;
+import com.example.weather.util.UtilTools;
 
 import java.util.List;
 
@@ -30,6 +31,11 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
         TextView low = view.findViewById(R.id.tv_low);
         TextView high = view.findViewById(R.id.tv_high);
         ImageView weather_icon=view.findViewById(R.id.weather_icon);
+        //设置字体
+        UtilTools.setFont(getContext(),date,"fonts/DIN-Medium.otf");
+        UtilTools.setFont(getContext(),low,"fonts/DIN-Medium.otf");
+        UtilTools.setFont(getContext(),high,"fonts/DIN-Medium.otf");
+
         Log.d("eee",weather.getType());
         switch (weather.getType()){
             case "多云":

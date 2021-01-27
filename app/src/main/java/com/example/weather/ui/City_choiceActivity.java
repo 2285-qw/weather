@@ -142,6 +142,7 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
             }
             TextView city = view.findViewById(R.id.city);
             TextView temperature = view.findViewById(R.id.temperature);
+
             city_delete = view.findViewById(R.id.city_delete);
             location = view.findViewById(R.id.location);
             if (position == 0) {
@@ -153,7 +154,7 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
                 public void onClick(View v) {
                     //finalView.setVisibility(View.GONE);
                     if (weather_date.size()==1) {
-                        Toast.makeText(City_choiceActivity.this, "如法删除此做城市", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(City_choiceActivity.this, "请至少保留一个定位或者关注城市哦", Toast.LENGTH_SHORT).show();
                     } else {
                         weather_date.remove(list.get(position));
                         list.remove(position);
