@@ -213,7 +213,7 @@ public class MainActivity extends BaseActivity {
                 break;
         }
         city.setText(info.getCity());
-        ed_wendu.setText(info.getWendu() + "°");
+        ed_wendu.setText(info.getWendu());
         WeatherAdapter weatherAdapter = new WeatherAdapter(this, R.layout.weather_item, info.getList());
         listView.setAdapter(weatherAdapter);
 

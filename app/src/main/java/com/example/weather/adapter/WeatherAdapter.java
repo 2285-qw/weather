@@ -55,7 +55,13 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
         if(position == 0){
             date.setText("今天");
         }else{
-            date.setText(weather.getDate().substring(3,6));
+            if (weather.getDate().length()==5){
+                date.setText(weather.getDate().substring(2,5));
+            }else {
+                Log.d("YY",weather.getDate().substring(0,weather.getDate().length()));
+                date.setText(weather.getDate().substring(3,6));
+            }
+
         }
         //type.setText(weather.getType());
         low.setText(weather.getLow().substring(3,weather.getLow().length()));
