@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.weather">
+    package="com.example.weatherhuihaoda">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
@@ -15,26 +15,35 @@
 
 
     <application
-        android:name=".application.BaseApplication"
+        android:name="com.example.weatherhuihaoda.application.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Weather"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.yisiActivity"></activity>
-        <activity android:name=".ui.SplashActivity">
+        <activity android:name="com.example.weatherhuihaoda.ui.yisiActivity"></activity>
+        <activity android:name="com.example.weatherhuihaoda.ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AddcityActivity" />
-        <activity android:name=".ui.City_choiceActivity" /> <!-- 定位页面 -->
-        <activity android:name=".ui.LocationActivity"></activity> <!-- 主页面 -->
+        <activity android:name="com.example.weatherhuihaoda.ui.AddcityActivity" />
+        <activity android:name="com.example.weatherhuihaoda.ui.City_choiceActivity" />
+        <!-- 开屏页广告 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.SplashActivityAD"
+            android:configChanges="keyboard|orientation|screenSize"
+            android:screenOrientation="portrait"
+            >
+        </activity>
+        <!-- 定位页面 -->
+        <activity android:name="com.example.weatherhuihaoda.ui.LocationActivity"></activity>
+        <!-- 主页面 -->
+        <activity
+            android:name="com.example.weatherhuihaoda.MainActivity"
             android:launchMode="singleInstance" /> <!-- 声明service组件 -->
         <service
             android:name="com.baidu.location.f"
@@ -44,6 +53,22 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="yrHFuVGDnwLZcpgAjuDsYoOPkse2NoGa" />
+
+        <provider
+            android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
+            android:authorities="${applicationId}.TTFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <provider
+            android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
+            android:authorities="${applicationId}.TTMultiProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
