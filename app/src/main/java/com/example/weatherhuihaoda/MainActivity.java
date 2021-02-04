@@ -13,17 +13,22 @@ import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bytedance.sdk.openadsdk.TTAdNative;
 import com.example.weatherhuihaoda.adapter.WeatherAdapter;
 import com.example.weatherhuihaoda.cb.impl.WeatherCallback;
+import com.example.weatherhuihaoda.config.TTAdManagerHolder;
 import com.example.weatherhuihaoda.entity.TodayWeather;
 import com.example.weatherhuihaoda.ui.AddcityActivity;
 import com.example.weatherhuihaoda.ui.BaseActivity;
 import com.example.weatherhuihaoda.ui.City_choiceActivity;
+import com.example.weatherhuihaoda.util.BannerUtil;
+import com.example.weatherhuihaoda.util.StaticClass;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -66,11 +71,18 @@ public class MainActivity extends BaseActivity {
     String Time;
     //天气数据本地储存名
     public static String map1  = "map11";
+    //Banner广告布局
+    private FrameLayout mBannerContainer;
+    //
+    TTAdNative mTTAdNative;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("sha1",getSha1(this));
+
+
+
     }
     @Override
     protected void onResume() {
@@ -89,6 +101,11 @@ public class MainActivity extends BaseActivity {
         Log.d("xxx", fileIsExists(map1) + "");
 
         initView();
+
+        mBannerContainer=findViewById(R.id.banner_containermain);
+        //step2:创建TTAdNative对象
+        mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
+        BannerUtil.loadBannerAd(StaticClass.BANNERID2,mTTAdNative, this,mBannerContainer);
         super.onResume();
     }
 

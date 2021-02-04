@@ -4,18 +4,25 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.example.weatherhuihaoda.MainActivity;
 import com.example.weatherhuihaoda.R;
+import com.example.weatherhuihaoda.config.TTAdManagerHolder;
+import com.example.weatherhuihaoda.util.BannerUtil;
+import com.example.weatherhuihaoda.util.StaticClass;
 
 import static com.example.weatherhuihaoda.MainActivity.list;
 import static com.example.weatherhuihaoda.MainActivity.map1;
@@ -37,15 +44,29 @@ public class City_choiceActivity extends AppCompatActivity implements View.OnCli
     ImageView confirm_button;
     //定位图标
     ImageView location;
+    //Banner广告布局
+    private FrameLayout mBannerContainer;
+    //
+    TTAdNative mTTAdNative;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_choice);
+
+        //保持屏幕竖屏
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         //初始化
         initDate();
         initview();
+
+        mBannerContainer=findViewById(R.id.banner_container);
+        //step2:创建TTAdNative对象
+        mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
+        BannerUtil.loadBannerAd(StaticClass.BANNERID,mTTAdNative, City_choiceActivity.this,mBannerContainer);
     }
 
     private void initview() {

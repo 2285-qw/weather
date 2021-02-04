@@ -41,7 +41,7 @@ public class BannerUtil {
                 .setImageAcceptedSize(640, 100)
                 //[start支持模板样式]:需要支持模板广告和原生广告样式的切换，需要调用supportRenderControl和setExpressViewAcceptedSize
                 .supportRenderControl() //支持模板样式
-                .setExpressViewAcceptedSize(10,5)//设置模板宽高（dp）
+                .setExpressViewAcceptedSize(640,100)//设置模板宽高（dp）
                 //[end支持模板样式]
                 .setNativeAdType(AdSlot.TYPE_BANNER) //请求原生广告时候，请务必调用该方法，设置参数为TYPE_BANNER或TYPE_INTERACTION_AD
                 .setAdCount(1)

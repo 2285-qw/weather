@@ -35,7 +35,9 @@ public class StaticClass {
     //开屏广告id
     public static final String SPALSHID="887433244";
     //Banner广告位id
-    public static final String BANNERID="945812911";
+    public static final String BANNERID="945820774";
+    //Banner广告位id2
+    public static final String BANNERID2="945823068";
 
 
 
