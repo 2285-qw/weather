@@ -99,6 +99,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
     private ImageView return_button;
     @Bind(R.id.yisi)
     private TextView yisi;
+    @Bind(R.id.user)
+    private TextView user;
 
     private Handler handler;
     private TextView overlay; // 对话框首字母TextView
@@ -123,6 +125,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
     private  String location1="";
     //记录定位次数变量
     int i;
+
+
 
     TextView curCityNameTv;
     @Override
@@ -159,6 +163,8 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
         curSelCity = locationCity;
 
         yisi.setOnClickListener(this);
+        user.setOnClickListener(this);
+
     }
 
     private void initData() {
@@ -335,6 +341,12 @@ public class AddcityActivity extends AppCompatActivity implements AbsListView.On
                 break;
             case R.id.yisi:
                 startActivity(new Intent(AddcityActivity.this, yisiActivity.class));
+                break;
+            case R.id.user:
+                startActivity(new Intent(AddcityActivity.this, User_agreement.class));
+                break;
+
+
         }
     }
 

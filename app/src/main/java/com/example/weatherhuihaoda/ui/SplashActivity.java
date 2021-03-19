@@ -98,6 +98,12 @@ public class SplashActivity extends BaseActivity {
         spannable.setSpan(new TextClick(), 106, 112, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         tv_msg.setText(spannable);
 
+        SpannableStringBuilder spannable1 = new SpannableStringBuilder(tv_msg.getText());
+        spannable1.setSpan(new ForegroundColorSpan(Color.parseColor("#C89C3C")), 113, 119, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_msg.setMovementMethod(LinkMovementMethod.getInstance());
+        spannable1.setSpan(new TextClick1(), 113, 119, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_msg.setText(spannable1);
+
         tv_msg.setHighlightColor(Color.parseColor("#00ffffff"));
 
         tv_cancel.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +144,18 @@ public class SplashActivity extends BaseActivity {
         @Override
         public void updateDrawState(@NonNull TextPaint ds) {
             //ds.setColor(Color.parseColor("#C89C3C"));
+        }
+    }
+    private class TextClick1 extends ClickableSpan {
+        @Override
+        public void onClick(View widget) { //在此处理点击事件
+            startActivity(new Intent(SplashActivity.this,User_agreement.class));
+            //Log.e("eeee_click", "点击");
+            //TODO 点击事件处理
+        }
+        @Override
+        public void updateDrawState(@NonNull TextPaint ds) {
+            ds.setColor(Color.parseColor("#C89C3C"));
         }
     }
 

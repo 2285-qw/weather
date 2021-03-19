@@ -11,39 +11,36 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- SD卡读取权限，用户写入离线定位数据 -->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" tools:ignore="ProtectedPermissions" /> <!-- 这个权限用于进行网络定位 -->
-
+    <uses-permission
+        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+        tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name="com.example.weatherhuihaoda.application.BaseApplication"
+        android:name=".application.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Weather"
         android:usesCleartextTraffic="true">
-        <activity android:name="com.example.weatherhuihaoda.ui.yisiActivity"></activity>
-        <activity android:name="com.example.weatherhuihaoda.ui.SplashActivity">
+        <activity android:name=".ui.User_agreement"></activity>
+        <activity android:name=".ui.yisiActivity" />
+        <activity android:name=".ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.weatherhuihaoda.ui.AddcityActivity" />
-        <activity android:name="com.example.weatherhuihaoda.ui.City_choiceActivity" />
-        <!-- 开屏页广告 -->
+        <activity android:name=".ui.AddcityActivity" />
+        <activity android:name=".ui.City_choiceActivity" /> <!-- 开屏页广告 -->
         <activity
             android:name=".ui.SplashActivityAD"
             android:configChanges="keyboard|orientation|screenSize"
-            android:screenOrientation="portrait"
-            >
-        </activity>
-        <!-- 定位页面 -->
-        <activity android:name="com.example.weatherhuihaoda.ui.LocationActivity"></activity>
-        <!-- 主页面 -->
+            android:screenOrientation="portrait"></activity> <!-- 定位页面 -->
+        <activity android:name=".ui.LocationActivity" /> <!-- 主页面 -->
         <activity
-            android:name="com.example.weatherhuihaoda.MainActivity"
+            android:name=".MainActivity"
             android:launchMode="singleInstance" /> <!-- 声明service组件 -->
         <service
             android:name="com.baidu.location.f"
@@ -58,13 +55,11 @@
             android:name="com.bytedance.sdk.openadsdk.TTFileProvider"
             android:authorities="${applicationId}.TTFileProvider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
         <provider
             android:name="com.bytedance.sdk.openadsdk.multipro.TTMultiProvider"
             android:authorities="${applicationId}.TTMultiProvider"
