@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
     //月日
     String Time;
     //天气数据本地储存名
-    public static String map1  = "map11";
+    public static String map1 = "map11";
     //Banner广告布局
     private FrameLayout mBannerContainer;
     //
@@ -79,11 +79,11 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("sha1",getSha1(this));
-
+        Log.d("sha1", getSha1(this));
 
 
     }
+
     @Override
     protected void onResume() {
         setContentView(R.layout.activity_main);
@@ -102,17 +102,17 @@ public class MainActivity extends BaseActivity {
 
         initView();
 
-        mBannerContainer=findViewById(R.id.banner_containermain);
+        mBannerContainer = findViewById(R.id.banner_containermain);
         //step2:创建TTAdNative对象
         mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
-        BannerUtil.loadBannerAd(StaticClass.BANNERID2,mTTAdNative, this,mBannerContainer);
+        BannerUtil.loadBannerAd(StaticClass.BANNERID2, mTTAdNative, this, mBannerContainer);
         super.onResume();
     }
 
     /**
      * 实现小圆点指示器功能
-     * */
-    private void initCircleIndicator(){
+     */
+    private void initCircleIndicator() {
         CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
         indicator.setViewPager(mviewPager);
     }
