@@ -79,7 +79,7 @@
             android:layout_height="match_parent"
             android:divider="@null" />
 
-        <com.example.weatherhuihaoda.view.LetterListView
+        <com.example.weather.view.LetterListView
             android:id="@+id/total_city_letters_lv"
             android:layout_width="25dp"
             android:layout_height="match_parent"

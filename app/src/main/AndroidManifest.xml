@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.weatherhuihaoda">
+    package="com.example.weather">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
@@ -16,31 +16,31 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name=".application.BaseApplication"
+        android:name="com.example.weather.application.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Weather"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.User_agreement"></activity>
-        <activity android:name=".ui.yisiActivity" />
-        <activity android:name=".ui.SplashActivity">
+        <activity android:name="com.example.weather.ui.User_agreement"></activity>
+        <activity android:name="com.example.weather.ui.yisiActivity" />
+        <activity android:name="com.example.weather.ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.AddcityActivity" />
-        <activity android:name=".ui.City_choiceActivity" /> <!-- 开屏页广告 -->
+        <activity android:name="com.example.weather.ui.AddcityActivity" />
+        <activity android:name="com.example.weather.ui.City_choiceActivity" /> <!-- 开屏页广告 -->
         <activity
-            android:name=".ui.SplashActivityAD"
+            android:name="com.example.weather.ui.SplashActivityAD"
             android:configChanges="keyboard|orientation|screenSize"
             android:screenOrientation="portrait"></activity> <!-- 定位页面 -->
-        <activity android:name=".ui.LocationActivity" /> <!-- 主页面 -->
+        <activity android:name="com.example.weather.ui.LocationActivity" /> <!-- 主页面 -->
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.weather.MainActivity"
             android:launchMode="singleInstance" /> <!-- 声明service组件 -->
         <service
             android:name="com.baidu.location.f"
